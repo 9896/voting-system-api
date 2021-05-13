@@ -1,0 +1,98 @@
+-----------
+DB TABLES
+-----------
+1.Student. The user is basically a student with all the normal information as found in school setting (this is important so as to actually get the full power of the fxns).
+	id.
+	name.
+	faculty.(index)
+	department.(index)
+	email.
+	password.
+	disciplinary_status.(poor or good).
+	academic_status(poor or good).
+	state.(admin or student).
+	
+
+2.Votes. This table will hold all the voting information. Note that for a certain participant_id, with a specific election_id with specific elections_start info, the 
+  voter_id must be unique for each such record meaning no voter can vote twice without the system detecting
+
+	participant_id.(which is basically user_id of a participating student)
+	election_id.(the id of a particular election)
+	voter_id.(the id of the individuall who has voted for this participant, which is just basically the student_id)
+	timestamps.(showing when the vote was casted)
+	election_id.(this is the id of the election that the particular participant is attempting to participate in)
+	
+
+3.Election. This table will hold the elections that will be held
+	id.
+	application_start.(the two fields below show when the election's application period will start and when it will end)
+	application_end.(note that they will help in automation of election times)
+	election_start.
+	election_end.
+	election_title.
+	election_credentials.
+	faculty.(index)
+	department.(index)
+	state.(is it pre-active, active or post). in a live setting this states will be automated, for testing they will be adjustible from admin dashboard
+
+4.Admin. This table will hold admin details
+	id.
+	name.
+	email.
+	password.
+
+5.Participant. This table will hold all the participants of a particular election
+	participant_id.(basically the user_id of a student who decides to participate in the election).
+	election_id.(basically the id of the election a specific student has decided to participate in).
+
+6.Leaders. This table will hold winning participants who would then hold the posts
+	participant_id.
+	election_id.
+	profile_photo_url
+
+
+----------------------
+PROGRAM USE CASE FLOW
+----------------------
+
+*Note that an election may be faculty specific, department specific or open to all thus a need to index faculty and deparments.if its open to all faculty and 
+*department fields remain null. the system will ensure that either faculty or department always remains null.
+
+1.Basically without logging in one is exposed to a list of all elections(pre-active, active, and post-active).But note post-active elections will only be visible only
+  to a certain date after which visitor is presented with dates showing post-active elections selection by date. The elections are shown in tabs with automatic landing
+  on active elections.Navigating through them would be done using a horizantal tab sitting below the main nav bar.Note that deffering database fetch operations will be
+  essential
+
+2.To view elections relevant to the user himself, they would have to login and then the system would provide a tab "myVote" from where user can see only elections
+  relevant to him or her and their current state.Again a horizantal tab below the main nav bar would provide this. Automatic landing is ofcourse on the active 
+  elections tab
+
+3.On viewing pre-active elections under "myVote" tab there is an option to "send participation request". A response should be promptly sent the the users notification
+  box after admin reviews what the system makes out of the student's request to vie( vetting is automatic but response is finally dispatched by admin). After admin 
+  consents an application, the user would now enter the participant table in the db.
+
+4.Post-active election tab basically shows who is the winner of various elections and by what margin they won, only showing the first three contenders.
+
+5.Loging in will carry the password and email, and then a loginController will return a response which will determine if 'oauth_token_route' will be called.
+
+------------------------
+FEATURES OF INTEREST
+------------------------
+1.A student must not be able to apply for two elections, once an application is sent he/she must become unable to send another request to participate in any election
+  unless previous request is revoked by applicant or the admin has already denied request for particular post
+
+2.A student also must not hold two posts/seats, thus if a student is already a leader, he/she must not be able to send request to participate. 
+
+3.When an election is declared all previous leaders holding that position are stripped of their title and are expected to send another request to participate and be 
+  elected.
+
+4.Once election state changes options available for it automatically change
+
+5.A user must not be able to vote twice for the same election/post
+
+6.A revoke action button will be important for most operations in the system.
+
+-------------------------------
+HOW TO COMMENCE IMPLEMENTATION
+-------------------------------
+1.Create the database tables, fill all with some dummy data, create the API, test api functionality, create the frontEnd, complete.
